@@ -7,15 +7,20 @@ import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.gamemode.GameModes;
-import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.item.ItemTypes;
 import org.spongepowered.api.item.inventory.Inventory;
 import org.spongepowered.api.item.inventory.ItemStack;
+import org.spongepowered.api.item.inventory.entity.Hotbar;
+import org.spongepowered.api.item.inventory.property.SlotIndex;
+import org.spongepowered.api.item.inventory.property.SlotPos;
 
 import fr.pmk_gravitywars.map.GravityMap;
+import fr.pmk_gravitywars.scheduler.WaintingTeamScheduler;
 
 public class GravityManager {
+
+	private static boolean stop;
 
 	private MainGravityWars instance;
 	
@@ -40,6 +45,14 @@ public class GravityManager {
 		Sponge.getEventManager().registerListeners(instance, l);
 	}	
 	
+	public void setSpectatorProtectListener(Object spectatorListener) {
+		Sponge.getEventManager().registerListeners(instance, spectatorListener);
+		
+	}
+	
+	public void setItemUseListener(Object l) {
+		Sponge.getEventManager().registerListeners(instance, l);
+	}
 
 	public MainGravityWars getInstance() {
 		return instance;
@@ -81,21 +94,32 @@ public class GravityManager {
 		this.state = state;
 	}
 	
+	@SuppressWarnings("deprecation")
 	public void setStuff(Player p) {
 		
 		Inventory i = p.getInventory();
 		
 		i.clear();
 		
-		i.offer(ItemStack.of(Sponge.getGame().getRegistry().getType(ItemType.class, "gravitygun:gravitygun").get(), 1));
+		Hotbar hotbar = i.query(Hotbar.class);
+		hotbar.set(new SlotIndex(0), ItemStack.of(Sponge.getGame().getRegistry().getType(ItemType.class, "gravitygun:gravitygun").get(), 1));
 		
-		//ItemStack item = ItemStack.builder().itemType(ItemTypes.TNT).quantity(400).build();
+		ItemStack item = ItemStack.builder().itemType(ItemTypes.TNT).quantity(64).build();
 		
-		//i.offer(item);
+		hotbar.set(new SlotIndex(1), item);
 		
-		//item = ItemStack.builder().itemType(ItemTypes.FLINT_AND_STEEL).build();
+	}
+	
+	public void autoStart() {
+		// TODO Auto-generated method stub
 		
-		//i.offer(item);	
+		new WaintingTeamScheduler().start();
+		
+	}	
+	
+	public static void PreStartParty() {
+		
+		
 		
 	}
 
@@ -123,6 +147,30 @@ public class GravityManager {
 		}
 		
 		
+		
+	}
+	
+	public static void PauseParty() {
+		
+	}
+	
+	public static void finishParty() {
+		
+		if(!stop) {
+			
+			stop = true;
+			
+			for (Player iterable_element : Sponge.getServer().getOnlinePlayers()) {
+				
+				
+				
+			}
+			
+		}
+		
+	}
+	
+	public static void stopParty() {
 		
 	}
 	

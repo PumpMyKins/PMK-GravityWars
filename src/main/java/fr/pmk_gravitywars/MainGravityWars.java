@@ -22,10 +22,13 @@ import org.spongepowered.api.world.extent.Extent;
 import com.flowpowered.math.vector.Vector3d;
 import com.google.inject.Inject;
 
+import fr.pmk_gravitywars.listener.ItemUseListener;
+import fr.pmk_gravitywars.listener.SpectatorListener;
 import fr.pmk_gravitywars.listener.TeamListener;
 import fr.pmk_gravitywars.map.GravityMap;
 import me.lucko.luckperms.api.LuckPermsApi;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
+import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
 
 @Plugin(id = "pmk-gravitywars", name = "PMK-GravityWars", version = "1.0")
@@ -61,42 +64,14 @@ public class MainGravityWars {
 	
 	private static MainGravityWars instance;
 	
-	@Listener
-    public void onPreInit(GamePreInitializationEvent  event) {
-        instance = this;
-		/*L’événement GamePreInitializationEvent est levé. Durant cet état, le plugin se prépare à l’initialisation. 
-		 * Les accès à l’instance du logger par défaut et aux informations concernant les localisations de fichiers de configurations préférées 
-		 * sont disponibles.
-		 */
-        
-       
-		
-    }
-	
-	@Listener
-	public void onInit(GameInitializationEvent event) {
-		
-		/*L’événement GameInitializationEvent est levé. Durant cet état, le plugin devrait avoir finit tout ce qu’il avait à faire afin de fonctionner. 
-		 * Les gestionnaires d’événements sont traités à ce moment là.
-		 */
-		
-		// ajout de la class de listener
-		
-		
-		
-	}
-	
-	@Listener
-	public void onPostInit(GamePostInitializationEvent event) {
-		
-		/* L’événement GamePostInitializationEvent est levé. Par cet état, les communications inter-plugin devraient être prêtes à se produire. 
-		 * Les plugins fournissant une API devraient être prêts à accepter des requêtes de base.
-		 */
-		
-	}
+	private static Location<World> spawn1 = new Location<World>(Sponge.getServer().getWorld("tntmap").get(), new Vector3d(245.601 , 60 , -6.5));
+	private static Location<World> spawn2 = new Location<World>(Sponge.getServer().getWorld("tntmap").get(), new Vector3d(149.317 , 60 , -6.5));
+	private static Location<World> spawnSpec = new Location<World>(Sponge.getServer().getWorld("tntmap").get(), new Vector3d(245.601 , 80 , -6.5));
 	
 	@Listener
 	public void onStartServer(GameStartingServerEvent event) {
+		
+		// register bungeecord channel
 		
 		Sponge.getGame().getChannelRegistrar().createRawChannel(this, "BungeeCord");
 		
@@ -106,20 +81,20 @@ public class MainGravityWars {
 		    luckAPI = provider.get().getProvider();
 		    
 		}
-		System.out.println(" instance manager " + StartGameListener.class.getName());
 		
+		// get du manager		
 		gravityManager = GravityManager.getManager(this); 
         
 	    // ajout des maps et spawn
-		System.out.println(" création location " + StartGameListener.class.getName());
-	    Location<World> l1 = new Location<World>(Sponge.getServer().getWorld("tntmap").get(), new Vector3d(245.601 , 60 , -6.5));
-	    Location<World> l2 = new Location<World>(Sponge.getServer().getWorld("tntmap").get(), new Vector3d(149.317 , 60 , -6.5));
-	      
-	    System.out.println(" set MAP " + StartGameListener.class.getName());
-	    gravityManager.setMap(new GravityMap(2, l1 , l2));  
+	    gravityManager.setMap(new GravityMap(15,spawn1,spawn2,spawnSpec));  
 	    
-	    System.out.println(" set du listener " + StartGameListener.class.getName());
+	    gravityManager.setSpectatorProtectListener(new SpectatorListener(gravityManager));
+	    
 	    gravityManager.setManagerTeamListener(new TeamListener(gravityManager));
+	    
+	    gravityManager.setItemUseListener(new ItemUseListener(gravityManager));
+	    
+	    //gravityManager.startWaitingCheck();
 		
 	}
 

@@ -1,4 +1,4 @@
-package fr.pmk_gravitywars;
+package fr.pmk_gravitywars.listener;
 
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.living.player.Player;
@@ -7,6 +7,8 @@ import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.entity.MoveEntityEvent;
 import org.spongepowered.api.event.entity.living.humanoid.player.RespawnPlayerEvent;
 import org.spongepowered.api.event.filter.cause.First;
+
+import fr.pmk_gravitywars.GravityManager;
 
 public class SpectatorListener {
 
