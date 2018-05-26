@@ -1,4 +1,4 @@
-package fr.pmk_gravitywars.listener;
+package fr.pmk_gravitywars.poubelle;
 
 import java.util.List;
 
@@ -21,6 +21,7 @@ import org.spongepowered.api.event.entity.living.humanoid.player.RespawnPlayerEv
 import org.spongepowered.api.event.filter.cause.First;
 import org.spongepowered.api.event.item.inventory.InteractItemEvent;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
+import org.spongepowered.api.item.inventory.Inventory;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.TextRepresentable;
 import org.spongepowered.api.world.Location;
@@ -29,7 +30,6 @@ import org.spongepowered.api.world.World;
 import fr.pmk_gravitywars.GravityManager;
 import fr.pmk_gravitywars.MainGravityWars;
 import fr.pmk_gravitywars.map.GravityMap;
-import fr.pmk_gravitywars.poubelle.StartGameListener;
 
 public class TeamListener {
 
@@ -45,37 +45,63 @@ public class TeamListener {
 		
 		if(gm.getPartyState().equals("waiting")) {
 			
+			Inventory i = p.getInventory();
+			
+			
 			List<Player> b = gm.getBlueTeamList();
 			List<Player> r = gm.getRedTeamList();
 			
-			if(r.size() > b.size()) {
-			
-				e.setMessage(Text.of("§9Le joueur §6" + p.getName() + "§9 a rejoint l'équipe bleu !"));
-				b.add(p);
-				p.setLocationSafely(gm.getMap().getBlue_team_spawn());
+			if((r.size() + b.size() >= MainGravityWars.getMaximumPlayer())) {
+				
+				p.offer(Keys.GAME_MODE, GameModes.SPECTATOR);
+				p.sendMessage(Text.of("§c Vous etes spectateur car il n'y a plus de place dans les équipes"));
 				
 			}else {
 				
-				e.setMessage(Text.of("§cLe joueur §6" + p.getName() + "§c a rejoint l'équipe rouge !"));
-				r.add(p);
-				p.setLocationSafely(gm.getMap().getRed_team_spawn());
+				if(r.size() > b.size()) {
+					
+					
+					
+					
+					e.setMessage(Text.of("§9Le joueur §6" + p.getName() + "§9 a rejoint l'équipe bleu !"));
+					b.add(p);
+					p.setLocationSafely(gm.getMap().getBlue_team_spawn());
+					
+				}else {
+					
+					e.setMessage(Text.of("§cLe joueur §6" + p.getName() + "§c a rejoint l'équipe rouge !"));
+					r.add(p);
+					p.setLocationSafely(gm.getMap().getRed_team_spawn());
+					
+				}
 				
 			}
+				
+				
+				
+			
 			
 			p.offer(Keys.GAME_MODE, GameModes.SPECTATOR);
 			
-			/*
+			
+			if((r.size() + b.size() >= MainGravityWars.getMinimumPlayer()))
+				return;
+			
 			if(r.size() == b.size()) {
 				System.out.println(" assez de joueur appelle de start " + StartGameListener.class.getName());
-				StartGameListener.start();
+				gm.startParty();
 			}else {
-				System.out.println(" joueur en plus " + StartGameListener.class.getName());
+				
+				
+				
 				if(StartGameListener.start) {
 					System.out.println(" cancel de du starting " + StartGameListener.class.getName());
 					StartGameListener.stop();
 				}
+				
+				
 			}
-			*/
+			
 		}else if(gm.getPartyState().equals("ingame")){
 			
 			p.offer(Keys.GAME_MODE, GameModes.SPECTATOR);

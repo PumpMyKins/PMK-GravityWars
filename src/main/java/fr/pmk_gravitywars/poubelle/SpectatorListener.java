@@ -1,4 +1,4 @@
-package fr.pmk_gravitywars.listener;
+package fr.pmk_gravitywars.poubelle;
 
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.living.player.Player;

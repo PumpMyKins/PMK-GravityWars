@@ -4,23 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.spongepowered.api.Sponge;
-import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.entity.living.player.gamemode.GameModes;
-import org.spongepowered.api.item.ItemType;
-import org.spongepowered.api.item.ItemTypes;
-import org.spongepowered.api.item.inventory.Inventory;
-import org.spongepowered.api.item.inventory.ItemStack;
-import org.spongepowered.api.item.inventory.entity.Hotbar;
-import org.spongepowered.api.item.inventory.property.SlotIndex;
-import org.spongepowered.api.item.inventory.property.SlotPos;
 
+import fr.pmk_gravitywars.listener.WaitingListener;
 import fr.pmk_gravitywars.map.GravityMap;
-import fr.pmk_gravitywars.scheduler.WaintingTeamScheduler;
 
 public class GravityManager {
-
-	private static boolean stop;
 
 	private MainGravityWars instance;
 	
@@ -29,7 +18,7 @@ public class GravityManager {
 	private List<Player> redTeamList = new ArrayList<>();
 	private List<Player> blueTeamList = new ArrayList<>();
 	
-	private String state = "waiting";
+	private String state = "stop";
 	
 	public static GravityManager getManager(MainGravityWars m) {
 		
@@ -41,25 +30,23 @@ public class GravityManager {
 		this.instance = m;
 	}
 	
-	public void setManagerTeamListener(Object l) {
-		Sponge.getEventManager().registerListeners(instance, l);
-	}	
+	// methods d'initialization
 	
-	public void setSpectatorProtectListener(Object spectatorListener) {
-		Sponge.getEventManager().registerListeners(instance, spectatorListener);
+	public void initGame() {
+		
+		// set de la map
+		this.map = new GravityMap(15, MainGravityWars.getSpawn1(), MainGravityWars.getSpawn2(), MainGravityWars.getSpawnSpec());
+		
+		// register la classe d'event pour la fase waiting
+		Sponge.getGame().getEventManager().registerListeners(MainGravityWars.getInstance(), new WaitingListener(this));
 		
 	}
 	
-	public void setItemUseListener(Object l) {
-		Sponge.getEventManager().registerListeners(instance, l);
-	}
+	
+	// setter & getter
 
 	public MainGravityWars getInstance() {
 		return instance;
-	}
-
-	public void setInstance(MainGravityWars instance) {
-		this.instance = instance;
 	}
 
 	public GravityMap getMap() {
@@ -94,7 +81,7 @@ public class GravityManager {
 		this.state = state;
 	}
 	
-	@SuppressWarnings("deprecation")
+	/*@SuppressWarnings("deprecation")
 	public void setStuff(Player p) {
 		
 		Inventory i = p.getInventory();
@@ -123,7 +110,7 @@ public class GravityManager {
 		
 	}
 
-	public static void startParty() {
+	public void startParty() {
 		// TODO Auto-generated method stub
 		
 		GravityManager gm = MainGravityWars.getGravityManager();
@@ -150,10 +137,6 @@ public class GravityManager {
 		
 	}
 	
-	public static void PauseParty() {
-		
-	}
-	
 	public static void finishParty() {
 		
 		if(!stop) {
@@ -173,5 +156,10 @@ public class GravityManager {
 	public static void stopParty() {
 		
 	}
+
+	public List<BonusType> getBonusList() {
+		// TODO Auto-generated method stub
+		return null;
+	}*/
 	
 }

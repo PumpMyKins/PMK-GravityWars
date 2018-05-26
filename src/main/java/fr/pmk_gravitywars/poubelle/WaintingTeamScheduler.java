@@ -1,4 +1,4 @@
-package fr.pmk_gravitywars.scheduler;
+package fr.pmk_gravitywars.poubelle;
 
 import java.util.concurrent.TimeUnit;
 

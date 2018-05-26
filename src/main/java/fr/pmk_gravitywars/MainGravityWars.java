@@ -22,10 +22,10 @@ import org.spongepowered.api.world.extent.Extent;
 import com.flowpowered.math.vector.Vector3d;
 import com.google.inject.Inject;
 
-import fr.pmk_gravitywars.listener.ItemUseListener;
-import fr.pmk_gravitywars.listener.SpectatorListener;
-import fr.pmk_gravitywars.listener.TeamListener;
 import fr.pmk_gravitywars.map.GravityMap;
+import fr.pmk_gravitywars.poubelle.ItemUseListener;
+import fr.pmk_gravitywars.poubelle.SpectatorListener;
+import fr.pmk_gravitywars.poubelle.TeamListener;
 import me.lucko.luckperms.api.LuckPermsApi;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
@@ -68,6 +68,9 @@ public class MainGravityWars {
 	private static Location<World> spawn2 = new Location<World>(Sponge.getServer().getWorld("tntmap").get(), new Vector3d(149.317 , 60 , -6.5));
 	private static Location<World> spawnSpec = new Location<World>(Sponge.getServer().getWorld("tntmap").get(), new Vector3d(245.601 , 80 , -6.5));
 	
+	private static int maxPlayer = 8;
+	private static int minPlayer = 2;
+	
 	@Listener
 	public void onStartServer(GameStartingServerEvent event) {
 		
@@ -86,21 +89,35 @@ public class MainGravityWars {
 		gravityManager = GravityManager.getManager(this); 
         
 	    // ajout des maps et spawn
-	    gravityManager.setMap(new GravityMap(15,spawn1,spawn2,spawnSpec));  
-	    
-	    gravityManager.setSpectatorProtectListener(new SpectatorListener(gravityManager));
-	    
-	    gravityManager.setManagerTeamListener(new TeamListener(gravityManager));
-	    
-	    gravityManager.setItemUseListener(new ItemUseListener(gravityManager));
-	    
-	    //gravityManager.startWaitingCheck();
+		gravityManager.initGame();
+		
+		
 		
 	}
 
-	public static MainGravityWars getInstace() {
+	public static MainGravityWars getInstance() {
 		// TODO Auto-generated method stub
 		return instance;
+	}
+
+	public static Location<World> getSpawn1() {
+		return spawn1;
+	}
+
+	public static Location<World> getSpawn2() {
+		return spawn2;
+	}
+
+	public static Location<World> getSpawnSpec() {
+		return spawnSpec;
+	}
+
+	public static int getMaxPlayer() {
+		return maxPlayer;
+	}
+
+	public static int getMinPlayer() {
+		return minPlayer;
 	}
 
 	public static GravityManager getGravityManager() {
@@ -109,6 +126,15 @@ public class MainGravityWars {
 
 	public static void setGravityManager(GravityManager gravityManager) {
 		MainGravityWars.gravityManager = gravityManager;
+	}
+
+	public static int getMinimumPlayer() {
+		// TODO Auto-generated method stub
+		return minPlayer;
+	}
+	
+	public static int getMaximumPlayer() {
+		return maxPlayer;
 	}
 
 }
