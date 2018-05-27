@@ -11,7 +11,7 @@ public class WaintingTeamScheduler {
 	public void start() {
 		// TODO Auto-generated method stub
 		
-		Task.Builder t = Task.builder();
+		/*Task.Builder t = Task.builder();
 		
 		t.execute(new Runnable() {
 			
@@ -21,7 +21,7 @@ public class WaintingTeamScheduler {
 				
 			}
 		}).delay(2, TimeUnit.SECONDS).interval(10, TimeUnit.SECONDS).submit(MainGravityWars.getInstace());
-		
+		*/
 	}
 
 	

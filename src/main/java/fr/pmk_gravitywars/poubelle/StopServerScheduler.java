@@ -19,12 +19,12 @@ public class StopServerScheduler {
 			
 			@Override
 			public void run() {
-				// TODO Auto-generated method stub
+				/*// TODO Auto-generated method stub
 				Game game = Sponge.getGame();
 		    	game.getCommandManager().process(game.getServer().getConsole(), "stop");
-				
+				*/
 			}
-		}).delay(15, TimeUnit.SECONDS).submit(MainGravityWars.getInstace());
+		}).delay(15, TimeUnit.SECONDS).submit(MainGravityWars.getInstance());
 		
 	}
 

@@ -43,7 +43,7 @@ public class TeamListener {
 	@Listener
 	public void onPlayerJoinServer(ClientConnectionEvent.Join e, @First Player p) {
 		
-		if(gm.getPartyState().equals("waiting")) {
+		/*if(gm.getPartyState().equals("waiting")) {
 			
 			Inventory i = p.getInventory();
 			
@@ -115,14 +115,14 @@ public class TeamListener {
 		}else {
 			p.kick(Text.of("Serveur fermé !"));
 			
-		}
+		}*/
 		
 	}
 	
 	@Listener
 	public void onPlayerLeftServer(ClientConnectionEvent.Disconnect e, @First Player p) {
 		
-		List<Player> b = gm.getBlueTeamList();
+		/*List<Player> b = gm.getBlueTeamList();
 		List<Player> r = gm.getRedTeamList();
 		
 		if(gm.getPartyState().equals("waiting")) {
@@ -172,16 +172,16 @@ public class TeamListener {
 				e.setMessage(Text.of("Retour au lobby dans quelques secondes !"));
 				
 				new StopGameScheduler().start();
-			}*/
+			}
 				
-		}		
+		}*/
 		
 	}
 	
 	@Listener
 	public void OnPlayerDeath(DestructEntityEvent.Death e, @First Player p) {
 		
-		System.out.println(" appelle mort d'un joueur " + StartGameListener.class.getName());
+		/*System.out.println(" appelle mort d'un joueur " + StartGameListener.class.getName());
 		
 		List<Player> b = gm.getBlueTeamList();
 		List<Player> r = gm.getRedTeamList();
@@ -214,7 +214,7 @@ public class TeamListener {
 				
 			}
 			
-		}
+		}*/
 		
 	}
 	

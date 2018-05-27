@@ -21,7 +21,7 @@ public class StopGameScheduler {
 			
 			@Override
 			public void run() {
-				// TODO Auto-generated method stub
+				/*// TODO Auto-generated method stub
 				
 				Sponge.getServer().getBroadcastChannel().send(Text.of("§2Retour au lobby dans quelques secondes !"));
 				
@@ -31,9 +31,9 @@ public class StopGameScheduler {
 					
 				}
 				
-				new StopServerScheduler().start();
+				new StopServerScheduler().start();*/
 			}
-		}).delay(15, TimeUnit.SECONDS).submit(MainGravityWars.getInstace());
+		}).delay(15, TimeUnit.SECONDS).submit(MainGravityWars.getInstance());
 	}
 	
 }

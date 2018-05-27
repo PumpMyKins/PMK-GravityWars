@@ -1,37 +1,25 @@
 package fr.pmk_gravitywars;
 
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 import java.util.logging.Logger;
 
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.config.DefaultConfig;
 import org.spongepowered.api.event.Listener;
-import org.spongepowered.api.event.game.state.GameInitializationEvent;
-import org.spongepowered.api.event.game.state.GamePostInitializationEvent;
-import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
 import org.spongepowered.api.event.game.state.GameStartingServerEvent;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.service.ProviderRegistration;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
-import org.spongepowered.api.world.extent.Extent;
-
 import com.flowpowered.math.vector.Vector3d;
 import com.google.inject.Inject;
 
-import fr.pmk_gravitywars.map.GravityMap;
-import fr.pmk_gravitywars.poubelle.ItemUseListener;
-import fr.pmk_gravitywars.poubelle.SpectatorListener;
-import fr.pmk_gravitywars.poubelle.TeamListener;
 import me.lucko.luckperms.api.LuckPermsApi;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
-import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
 
-@Plugin(id = "pmk-gravitywars", name = "PMK-GravityWars", version = "1.0")
+@Plugin(id = "pmkgravitywars", name = "PMK-GravityWars", version = "1.0")
 public class MainGravityWars {
 
 	private static LuckPermsApi luckAPI;
@@ -45,28 +33,15 @@ public class MainGravityWars {
 	@Inject
 	private Logger logger;
 	
-	@Inject
-	@DefaultConfig(sharedRoot = true)
-	private Path defaultConfig;
-
-	@Inject
-	@DefaultConfig(sharedRoot = true)
-	private ConfigurationLoader<CommentedConfigurationNode> configManager;
-
-	
 	public Logger getLogger() {
 		return this.logger;
 	}
 	
-	public Path getDefaultPathConfig() {
-		return defaultConfig;
-	}
 	
-	private static MainGravityWars instance;
-	
-	private static Location<World> spawn1 = new Location<World>(Sponge.getServer().getWorld("tntmap").get(), new Vector3d(245.601 , 60 , -6.5));
-	private static Location<World> spawn2 = new Location<World>(Sponge.getServer().getWorld("tntmap").get(), new Vector3d(149.317 , 60 , -6.5));
-	private static Location<World> spawnSpec = new Location<World>(Sponge.getServer().getWorld("tntmap").get(), new Vector3d(245.601 , 80 , -6.5));
+	private static MainGravityWars instance;	
+	private static Location<World> spawn1; 
+	private static Location<World> spawn2; 
+	private static Location<World> spawnSpec; 
 	
 	private static int maxPlayer = 6;
 	private static int minPlayer = 2;
@@ -74,7 +49,14 @@ public class MainGravityWars {
 	@Listener
 	public void onStartServer(GameStartingServerEvent event) {
 		
+		// init map
+		spawn1 = new Location<World>(Sponge.getServer().getWorld("tntmap").get(), new Vector3d(245.601 , 60 , -6.5));
+		spawn2 = new Location<World>(Sponge.getServer().getWorld("tntmap").get(), new Vector3d(149.317 , 60 , -6.5));
+		spawnSpec = new Location<World>(Sponge.getServer().getWorld("tntmap").get(), new Vector3d(245.601 , 80 , -6.5));
+		
 		// register bungeecord channel
+		
+		instance = this;
 		
 		Sponge.getGame().getChannelRegistrar().createRawChannel(this, "BungeeCord");
 		

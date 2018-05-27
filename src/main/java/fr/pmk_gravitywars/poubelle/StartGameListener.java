@@ -18,7 +18,7 @@ public class StartGameListener {
 
 	public static void start() {
 		
-		System.out.println("démarrage de la parit" + StartGameListener.class.getName());
+		/*System.out.println("démarrage de la parit" + StartGameListener.class.getName());
 		
 		if(first_start) {
 			
@@ -28,7 +28,7 @@ public class StartGameListener {
 		}
 		
 		start = true; 
-		
+		*/
 	}
 	
 	public static void stop() {
@@ -41,7 +41,7 @@ public class StartGameListener {
 	    
 	    @Override
 	    public void accept(Task task) {
-	    	if(start) {
+	    	/*if(start) {
 	    		
 	    		s = task;
 		        seconds -= 5;
@@ -55,7 +55,7 @@ public class StartGameListener {
 		        		GravityManager.startParty();
 		        }
 	    		
-	    	}
+	    	}*/
 	        
 	    }
 	}

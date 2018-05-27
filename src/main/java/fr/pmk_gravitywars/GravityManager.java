@@ -8,6 +8,7 @@ import org.spongepowered.api.entity.living.player.Player;
 
 import fr.pmk_gravitywars.listener.WaitingListener;
 import fr.pmk_gravitywars.map.GravityMap;
+import fr.pmk_gravitywars.scheduler.WaitingScheduler;
 
 public class GravityManager {
 
@@ -41,6 +42,8 @@ public class GravityManager {
 		teamInitCommand();
 		
 		Sponge.getGame().getEventManager().registerListeners(MainGravityWars.getInstance(), new WaitingListener(this));
+		
+		WaitingScheduler.start(this);
 		
 	}
 	
