@@ -6,14 +6,14 @@ import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.gamemode.GameModes;
+import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.entity.DestructEntityEvent.Death;
 import org.spongepowered.api.event.entity.MoveEntityEvent;
 import org.spongepowered.api.event.entity.living.humanoid.player.RespawnPlayerEvent;
 import org.spongepowered.api.event.item.inventory.ClickInventoryEvent;
 import org.spongepowered.api.event.item.inventory.DropItemEvent.Dispense;
 import org.spongepowered.api.event.item.inventory.InteractItemEvent;
-import org.spongepowered.api.event.network.ClientConnectionEvent.Disconnect;
-import org.spongepowered.api.event.network.ClientConnectionEvent.Join;
+import org.spongepowered.api.event.network.ClientConnectionEvent;
 import org.spongepowered.api.item.inventory.ItemStackSnapshot;
 import org.spongepowered.api.text.Text;
 
@@ -29,7 +29,8 @@ public class WaitingListener implements IPhaseGame{
 	}
 
 	@Override
-	public void onPlayerJoin(Join e, Player p) {
+	@Listener
+	public void onPlayerJoin(ClientConnectionEvent.Join e, Player p) {
 		// TODO Auto-generated method stub
 		e.setMessage(Text.of("§l§5[GravityWars]§d Le joueur §r§6" + p.getName() + "§r§l§d a rejoins la partie !"));
 		//teleportation du joueur
@@ -43,7 +44,8 @@ public class WaitingListener implements IPhaseGame{
 	}
 
 	@Override
-	public void onPlayerQuit(Disconnect e, Player p) {
+	@Listener
+	public void onPlayerQuit(ClientConnectionEvent.Disconnect e, Player p) {
 		// TODO Auto-generated method stub
 		
 		List<Player> r = gm.getRedTeamList();
@@ -62,6 +64,7 @@ public class WaitingListener implements IPhaseGame{
 	}
 
 	@Override
+	@Listener
 	public void onPlayerUseItem(InteractItemEvent e, Player p) {
 		// TODO Auto-generated method stub
 		
@@ -75,7 +78,7 @@ public class WaitingListener implements IPhaseGame{
 		
 		if(n.equals("§c§lRejoindre l'équipe rouge")) {
 			// utilisation team rouge
-			if(r.size() > (MainGravityWars.getMaxPlayer() / 2)) {
+			if(r.size() > (MainGravityWars.getMaxPlayer() / 2) | (((r.size() + 1) - b.size()) >= 2)) {
 				
 				// plus de place
 				p.sendMessage(Text.of("§c§lL'équipe rouge est complète !"));
@@ -103,7 +106,7 @@ public class WaitingListener implements IPhaseGame{
 			
 		}else if(n.equals("§9§lRejoindre l'équipe bleu")) {
 			// utilisation team bleu
-			if(b.size() > (MainGravityWars.getMaxPlayer() / 2)) {
+			if(b.size() > (MainGravityWars.getMaxPlayer() / 2) | (((b.size() + 1) - r.size()) >= 2)) {
 				
 				// plus de place
 				p.sendMessage(Text.of("§9§lL'équipe bleu est complète !"));
@@ -142,14 +145,15 @@ public class WaitingListener implements IPhaseGame{
 			
 		}
 
-		p.getInventory().clear();
-		giveWaintingStuff(p);
+		e.setCancelled(true);
 		
-		e.setCancelled(true);	
+		p.getInventory().clear();
+		giveWaintingStuff(p);	
 		
 	}
 
 	@Override
+	@Listener
 	public void onPlayerRespawn(RespawnPlayerEvent e, Player p) {
 		// TODO Auto-generated method stub
 		
@@ -164,12 +168,14 @@ public class WaitingListener implements IPhaseGame{
 	}
 
 	@Override
+	@Listener
 	public void onPlayerDeath(Death e, Player p) {
 		// TODO Auto-generated method stub
 		e.setMessageCancelled(true);
 	}
 
 	@Override
+	@Listener
 	public void onPlayerDropItem(Dispense e, Player p) {
 		// TODO Auto-generated method stub
 		e.setCancelled(true);
@@ -179,6 +185,7 @@ public class WaitingListener implements IPhaseGame{
 	}
 
 	@Override
+	@Listener
 	public void onPlayerClicInventory(ClickInventoryEvent e, Player p) {
 		// TODO Auto-generated method stub
 		e.setCancelled(true);
@@ -188,6 +195,7 @@ public class WaitingListener implements IPhaseGame{
 	}
 
 	@Override
+	@Listener
 	public void onPlayerMove(MoveEntityEvent e, Player p) {
 		// TODO Auto-generated method stub
 		// pas de restriction
