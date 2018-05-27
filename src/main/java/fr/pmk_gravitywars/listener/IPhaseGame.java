@@ -3,6 +3,7 @@ package fr.pmk_gravitywars.listener;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.entity.DestructEntityEvent;
+import org.spongepowered.api.event.entity.MoveEntityEvent;
 import org.spongepowered.api.event.entity.living.humanoid.player.RespawnPlayerEvent;
 import org.spongepowered.api.event.filter.cause.First;
 import org.spongepowered.api.event.item.inventory.ClickInventoryEvent;
@@ -31,6 +32,8 @@ public interface IPhaseGame {
 	public void onPlayerRespawn(RespawnPlayerEvent e, @First Player p);
 	
 	public void onPlayerDeath(DestructEntityEvent.Death e, @First Player p);
+	
+	public void onPlayerMove(MoveEntityEvent e, @First Player p);
 	
 	@SuppressWarnings("deprecation")
 	public default void giveWaintingStuff(Player p) {

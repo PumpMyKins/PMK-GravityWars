@@ -68,7 +68,7 @@ public class MainGravityWars {
 	private static Location<World> spawn2 = new Location<World>(Sponge.getServer().getWorld("tntmap").get(), new Vector3d(149.317 , 60 , -6.5));
 	private static Location<World> spawnSpec = new Location<World>(Sponge.getServer().getWorld("tntmap").get(), new Vector3d(245.601 , 80 , -6.5));
 	
-	private static int maxPlayer = 8;
+	private static int maxPlayer = 6;
 	private static int minPlayer = 2;
 	
 	@Listener
@@ -126,15 +126,6 @@ public class MainGravityWars {
 
 	public static void setGravityManager(GravityManager gravityManager) {
 		MainGravityWars.gravityManager = gravityManager;
-	}
-
-	public static int getMinimumPlayer() {
-		// TODO Auto-generated method stub
-		return minPlayer;
-	}
-	
-	public static int getMaximumPlayer() {
-		return maxPlayer;
 	}
 
 }

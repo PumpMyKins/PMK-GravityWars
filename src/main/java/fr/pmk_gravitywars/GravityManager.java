@@ -38,12 +38,39 @@ public class GravityManager {
 		this.map = new GravityMap(15, MainGravityWars.getSpawn1(), MainGravityWars.getSpawn2(), MainGravityWars.getSpawnSpec());
 		
 		// register la classe d'event pour la fase waiting
+		teamInitCommand();
+		
 		Sponge.getGame().getEventManager().registerListeners(MainGravityWars.getInstance(), new WaitingListener(this));
 		
 	}
 	
 	
+	
 	// setter & getter
+
+	public void teamInitCommand() {
+		// TODO Auto-generated method stub
+		// création de la team rouge
+		Sponge.getGame().getCommandManager().process(Sponge.getServer().getConsole(), "/scoreboard teams add rouge Equipe rouge");
+		Sponge.getGame().getCommandManager().process(Sponge.getServer().getConsole(), "/scoreboard teams option rouge color red");
+		
+		// creation de la team bleu
+		Sponge.getGame().getCommandManager().process(Sponge.getServer().getConsole(), "/scoreboard teams add blue Equipe bleu");
+		Sponge.getGame().getCommandManager().process(Sponge.getServer().getConsole(), "/scoreboard teams option blue color blue");
+	}
+	
+	
+	public void teamJoinCommand(Player p, String name) {
+		// join équipe
+		Sponge.getGame().getCommandManager().process(Sponge.getServer().getConsole(), "/scoreboard teams join " + name + " " + p.getName());
+		
+	}
+	
+	public void teamLeaveCommand(Player p) {
+		// leave équipe
+		Sponge.getGame().getCommandManager().process(Sponge.getServer().getConsole(), "/scoreboard teams leave " + p.getName());
+		
+	}
 
 	public MainGravityWars getInstance() {
 		return instance;
