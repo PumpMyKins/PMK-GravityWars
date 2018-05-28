@@ -1,11 +1,9 @@
 package fr.pmk_gravitywars;
 
-import java.nio.file.Path;
 import java.util.Optional;
 import java.util.logging.Logger;
 
 import org.spongepowered.api.Sponge;
-import org.spongepowered.api.config.DefaultConfig;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.state.GameStartingServerEvent;
 import org.spongepowered.api.plugin.Plugin;
@@ -16,8 +14,6 @@ import com.flowpowered.math.vector.Vector3d;
 import com.google.inject.Inject;
 
 import me.lucko.luckperms.api.LuckPermsApi;
-import ninja.leaping.configurate.commented.CommentedConfigurationNode;
-import ninja.leaping.configurate.loader.ConfigurationLoader;
 
 @Plugin(id = "pmkgravitywars", name = "PMK-GravityWars", version = "1.0")
 public class MainGravityWars {
