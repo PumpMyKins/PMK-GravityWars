@@ -49,12 +49,12 @@ public interface IPhaseGame {
 		ItemStack leaveItem = ItemStack.builder().itemType(ItemTypes.BED).quantity(1).build();
 		leaveItem.offer(Keys.DISPLAY_NAME, Text.of("§2§lRetour au lobby"));
 		
-		hotbar.set(new SlotIndex(4), redItem);
+		hotbar.set(new SlotIndex(4), leaveItem);
 		
 		ItemStack blueItem = ItemStack.builder().itemType(ItemTypes.LAPIS_ORE).quantity(1).build();
 		blueItem.offer(Keys.DISPLAY_NAME, Text.of("§9§lRejoindre l'équipe bleu"));
 		
-		hotbar.set(new SlotIndex(6), redItem);
+		hotbar.set(new SlotIndex(6), blueItem);
 		
 	}
 	
