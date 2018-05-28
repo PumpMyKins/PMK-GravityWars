@@ -4,8 +4,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.spongepowered.api.Sponge;
+import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.entity.living.player.gamemode.GameModes;
+import org.spongepowered.api.item.ItemType;
+import org.spongepowered.api.item.ItemTypes;
+import org.spongepowered.api.item.inventory.Inventory;
+import org.spongepowered.api.item.inventory.ItemStack;
+import org.spongepowered.api.item.inventory.entity.Hotbar;
+import org.spongepowered.api.item.inventory.property.SlotIndex;
 
+import fr.pmk_gravitywars.listener.StartListener;
 import fr.pmk_gravitywars.listener.WaitingListener;
 import fr.pmk_gravitywars.map.GravityMap;
 import fr.pmk_gravitywars.scheduler.WaitingScheduler;
@@ -47,13 +56,59 @@ public class GravityManager {
 		
 	}
 	
+	public void startGame() {
+		
+		Sponge.getGame().getEventManager().unregisterListeners(new WaitingListener(this));
+		Sponge.getGame().getEventManager().registerListeners(MainGravityWars.getInstance(), new StartListener(this));
+		
+		// tï¿½lï¿½portation de l'ï¿½quipe rouge
+		
+		for (Player player : blueTeamList) {
+			
+			// tï¿½lï¿½portation
+			player.setLocation(getMap().getBlue_team_spawn());
+			
+			// set du stuff
+			setStuff(player);
+			
+		}
+		
+		// tï¿½lï¿½portation de l'ï¿½quipe bleu
+		
+		for (Player player : redTeamList) {
+			
+			// tï¿½lï¿½portation
+			player.setLocation(getMap().getBlue_team_spawn());
+			
+			// set du stuff
+			setStuff(player);
+			
+		}
+		
+		// tï¿½lï¿½portation des spectateurs;
+		for (Player player : Sponge.getServer().getOnlinePlayers()) {
+			
+			if(!redTeamList.contains(player) & !redTeamList.contains(player)) {
+				
+				//spec
+				
+				player.setLocation(getMap().getSpec_spawn());
+				// mise ï¿½ jour du gamemode
+				player.offer(Keys.GAME_MODE,GameModes.ADVENTURE);
+				
+			}
+			
+		}
+		
+	}
+	
 	
 	
 	// setter & getter
 
 	public void teamInitCommand() {
 		// TODO Auto-generated method stub
-		// création de la team rouge
+		// crï¿½ation de la team rouge
 		Sponge.getGame().getCommandManager().process(Sponge.getServer().getConsole(), "/scoreboard teams add rouge Equipe rouge");
 		Sponge.getGame().getCommandManager().process(Sponge.getServer().getConsole(), "/scoreboard teams option rouge color red");
 		
@@ -64,13 +119,13 @@ public class GravityManager {
 	
 	
 	public void teamJoinCommand(Player p, String name) {
-		// join équipe
+		// join ï¿½quipe
 		Sponge.getGame().getCommandManager().process(Sponge.getServer().getConsole(), "/scoreboard teams join " + name + " " + p.getName());
 		
 	}
 	
 	public void teamLeaveCommand(Player p) {
-		// leave équipe
+		// leave ï¿½quipe
 		Sponge.getGame().getCommandManager().process(Sponge.getServer().getConsole(), "/scoreboard teams leave " + p.getName());
 		
 	}
@@ -111,7 +166,7 @@ public class GravityManager {
 		this.state = state;
 	}
 	
-	/*@SuppressWarnings("deprecation")
+	@SuppressWarnings("deprecation")
 	public void setStuff(Player p) {
 		
 		Inventory i = p.getInventory();
@@ -126,7 +181,7 @@ public class GravityManager {
 		hotbar.set(new SlotIndex(1), item);
 		
 	}
-	
+	/*
 	public void autoStart() {
 		// TODO Auto-generated method stub
 		
