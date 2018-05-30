@@ -61,11 +61,11 @@ public class GravityManager {
 		Sponge.getGame().getEventManager().unregisterListeners(new WaitingListener(this));
 		Sponge.getGame().getEventManager().registerListeners(MainGravityWars.getInstance(), new StartListener(this));
 		
-		// t�l�portation de l'�quipe rouge
+		// téléportation de l'équipe rouge
 		
 		for (Player player : blueTeamList) {
 			
-			// t�l�portation
+			// téléportation
 			player.setLocation(getMap().getBlue_team_spawn());
 			
 			// set du stuff
@@ -73,11 +73,11 @@ public class GravityManager {
 			
 		}
 		
-		// t�l�portation de l'�quipe bleu
+		// téléportation de l'équipe bleu
 		
 		for (Player player : redTeamList) {
 			
-			// t�l�portation
+			// téléportation
 			player.setLocation(getMap().getBlue_team_spawn());
 			
 			// set du stuff
@@ -85,7 +85,7 @@ public class GravityManager {
 			
 		}
 		
-		// t�l�portation des spectateurs;
+		// téléportation des spectateurs;
 		for (Player player : Sponge.getServer().getOnlinePlayers()) {
 			
 			if(!redTeamList.contains(player) & !redTeamList.contains(player)) {
@@ -93,7 +93,7 @@ public class GravityManager {
 				//spec
 				
 				player.setLocation(getMap().getSpec_spawn());
-				// mise � jour du gamemode
+				// mise à jour du gamemode
 				player.offer(Keys.GAME_MODE,GameModes.ADVENTURE);
 				
 			}
@@ -108,7 +108,7 @@ public class GravityManager {
 
 	public void teamInitCommand() {
 		// TODO Auto-generated method stub
-		// cr�ation de la team rouge
+		// création de la team rouge
 		Sponge.getGame().getCommandManager().process(Sponge.getServer().getConsole(), "/scoreboard teams add rouge Equipe rouge");
 		Sponge.getGame().getCommandManager().process(Sponge.getServer().getConsole(), "/scoreboard teams option rouge color red");
 		
@@ -119,13 +119,13 @@ public class GravityManager {
 	
 	
 	public void teamJoinCommand(Player p, String name) {
-		// join �quipe
+		// join équipe
 		Sponge.getGame().getCommandManager().process(Sponge.getServer().getConsole(), "/scoreboard teams join " + name + " " + p.getName());
 		
 	}
 	
 	public void teamLeaveCommand(Player p) {
-		// leave �quipe
+		// leave équipe
 		Sponge.getGame().getCommandManager().process(Sponge.getServer().getConsole(), "/scoreboard teams leave " + p.getName());
 		
 	}
