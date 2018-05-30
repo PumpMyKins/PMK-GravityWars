@@ -56,7 +56,7 @@ public class MainGravityWars {
 		
 		Sponge.getGame().getChannelRegistrar().createRawChannel(this, "BungeeCord");
 		
-		// Récupération de l'api luckperms
+		// Rï¿½cupï¿½ration de l'api luckperms
 		Optional<ProviderRegistration<LuckPermsApi>> provider = Sponge.getServiceManager().getRegistration(LuckPermsApi.class);
 		if (provider.isPresent()) {
 		    luckAPI = provider.get().getProvider();
