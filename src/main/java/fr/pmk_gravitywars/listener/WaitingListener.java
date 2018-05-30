@@ -10,6 +10,7 @@ import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.entity.DestructEntityEvent.Death;
 import org.spongepowered.api.event.entity.MoveEntityEvent;
 import org.spongepowered.api.event.entity.living.humanoid.player.RespawnPlayerEvent;
+import org.spongepowered.api.event.filter.cause.First;
 import org.spongepowered.api.event.item.inventory.ClickInventoryEvent;
 import org.spongepowered.api.event.item.inventory.DropItemEvent.Dispense;
 import org.spongepowered.api.event.item.inventory.InteractItemEvent;
@@ -30,22 +31,22 @@ public class WaitingListener implements IPhaseGame{
 
 	@Override
 	@Listener
-	public void onPlayerJoin(ClientConnectionEvent.Join e, Player p) {
+	public void onPlayerJoin(ClientConnectionEvent.Join e,@First Player p) {
 		// TODO Auto-generated method stub
-		e.setMessage(Text.of("§l§5[GravityWars]§d Le joueur §r§6" + p.getName() + "§r§l§d a rejoins la partie !"));
+		e.setMessage(Text.of("Â§lÂ§5[GravityWars]Â§d Le joueur Â§rÂ§6" + p.getName() + "Â§rÂ§lÂ§d a rejoins la partie !"));
 		//teleportation du joueur
 		p.setLocation(gm.getMap().getRed_team_spawn());
-		// mise à jour du gamemode
+		// mise Â§ jour du gamemode
 		p.offer(Keys.GAME_MODE,GameModes.ADVENTURE);
 		
-		// mise à jour de l'inventaire
+		// mise Â§ jour de l'inventaire
 		giveWaintingStuff(p);
 		
 	}
 
 	@Override
 	@Listener
-	public void onPlayerQuit(ClientConnectionEvent.Disconnect e, Player p) {
+	public void onPlayerQuit(ClientConnectionEvent.Disconnect e,@First Player p) {
 		// TODO Auto-generated method stub
 		
 		List<Player> r = gm.getRedTeamList();
@@ -59,13 +60,13 @@ public class WaitingListener implements IPhaseGame{
 		
 		gm.teamLeaveCommand(p);
 		
-		e.setMessage(Text.of("§l§5[GravityWars]§d Le joueur §r§6" + p.getName() + "§r§l§d a quitté la partie !"));
+		e.setMessage(Text.of("Â§lÂ§5[GravityWars]Â§d Le joueur Â§rÂ§6" + p.getName() + "Â§rÂ§lÂ§d a quittÃ© la partie !"));
 		
 	}
 
 	@Override
 	@Listener
-	public void onPlayerUseItem(InteractItemEvent e, Player p) {
+	public void onPlayerUseItem(InteractItemEvent e,@First Player p) {
 		// TODO Auto-generated method stub
 		
 		List<Player> r = gm.getRedTeamList();
@@ -74,68 +75,72 @@ public class WaitingListener implements IPhaseGame{
 
 		ItemStackSnapshot i = e.getItemStack();
 		
-		String n = i.get(Keys.DISPLAY_NAME).get().toPlain();
+		if(i.isEmpty())
+			return;
 		
-		if(n.equals("§c§lRejoindre l'équipe rouge")) {
+		String n = i.get(Keys.DISPLAY_NAME).get().toPlain();
+		System.out.println(n);
+		
+		if(n.contains("Rejoindre l'Ã©quipe rouge")) {
 			// utilisation team rouge
 			if(r.size() > (MainGravityWars.getMaxPlayer() / 2) | (((r.size() + 1) - b.size()) >= 2)) {
 				
 				// plus de place
-				p.sendMessage(Text.of("§c§lL'équipe rouge est complète !"));
+				p.sendMessage(Text.of("Â§cÂ§lL'Ã©quipe rouge est complÃ¨te !"));
 				
 			}else if(!r.contains(p)) {
-				// ajout dans l'équipe
-				if(b.contains(p))	// si déjà dans une équipe
+				// ajout dans l'Â§quipe
+				if(b.contains(p))	// si dÂ§jÂ§ dans une Â§quipe
 					b.remove(p);	// alors remove
 				
 				r.add(p);
 				gm.teamJoinCommand(p, "rouge");
-				p.sendMessage(Text.of("§c§lVous avez rejoins l'équipe rouge"));	// envoie du message au joueur
+				p.sendMessage(Text.of("Â§cÂ§lVous avez rejoins l'Ã©quipe rouge"));	// envoie du message au joueur
 				
 				for (Player player : Sponge.getServer().getOnlinePlayers()) {	// envoie du message en broadcast
 					
 					if(player != p)
-						p.sendMessage(Text.of("§c§lLe joueur §r§6" + p.getName() + "§r§c§l à rejoint l'équipe rouge"));
+						p.sendMessage(Text.of("Â§cÂ§lLe joueur Â§rÂ§6" + p.getName() + "Â§rÂ§cÂ§l Â§ rejoint l'Ã©quipe rouge"));
 					
 				}
 				
 			}else {
-				//déjà dans l'équipe
-				p.sendMessage(Text.of("§cVous faites déjà parti de l'équipe rouge !"));
+				//dÂ§jÂ§ dans l'Â§quipe
+				p.sendMessage(Text.of("Â§cVous faites dÃ©jÃ  parti de l'Ã©quipe rouge !"));
 			}			
 			
-		}else if(n.equals("§9§lRejoindre l'équipe bleu")) {
+		}else if(n.contains("Rejoindre l'Ã©quipe bleu")) {
 			// utilisation team bleu
 			if(b.size() > (MainGravityWars.getMaxPlayer() / 2) | (((b.size() + 1) - r.size()) >= 2)) {
 				
 				// plus de place
-				p.sendMessage(Text.of("§9§lL'équipe bleu est complète !"));
+				p.sendMessage(Text.of("Â§9Â§lL'Ã©quipe bleu est complÃ¨te !"));
 				
 			}else if(!b.contains(p)) {
 				
-				if(r.contains(p))	// si déjà dans une équipe
+				if(r.contains(p))	// si dÂ§jÂ§ dans une Â§quipe
 					r.remove(p);	// alors remove
 				
-				// ajout dans l'équipe
+				// ajout dans l'Â§quipe
 				b.add(p);
 				gm.teamJoinCommand(p, "blue");
-				p.sendMessage(Text.of("§9§lVous avez rejoins l'équipe bleu"));	// envoie du message au joueur
+				p.sendMessage(Text.of("Â§9Â§lVous avez rejoins l'Ã©quipe bleu"));	// envoie du message au joueur
 				
 				for (Player player : Sponge.getServer().getOnlinePlayers()) {	// envoie du message en broadcast
 					
 					if(player != p)
-						p.sendMessage(Text.of("§9§lLe joueur §r§6" + p.getName() + "§r§9§l à rejoint l'équipe bleu"));
+						p.sendMessage(Text.of("Â§9Â§lLe joueur Â§rÂ§6" + p.getName() + "Â§rÂ§9Â§l Â§ rejoint l'Ã©quipe bleu"));
 					
 				}
 
 			}else {
-				//déjà dans l'équipe
-				p.sendMessage(Text.of("§9§lVous faites déjà parti de l'équipe bleu !"));
+				//dÂ§jÂ§ dans l'Â§quipe
+				p.sendMessage(Text.of("Â§9Â§lVous faites dÃ©jÃ  parti de l'Ã©quipe bleu !"));
 			}
 			
-		}else if(n.equals("§2§lRetour au lobby")) {
+		}else if(n.contains("Retour au lobby")) {
 			// utilisation retour lobby
-			p.sendMessage(Text.of("§2§lVous allez etre renvoyé au lobby dans quelques secondes .... Patientez"));
+			p.sendMessage(Text.of("Â§2Â§lVous allez etre renvoyÃ© au lobby dans quelques secondes .... Patientez"));
 			// bungeecord renvoie au lobby
 			Sponge.getChannelRegistrar().getOrCreateRaw(MainGravityWars.getInstance(), "BungeeCord").sendTo(p, buf -> buf.writeUTF("Connect").writeUTF("lobby"));
 			
@@ -154,29 +159,7 @@ public class WaitingListener implements IPhaseGame{
 
 	@Override
 	@Listener
-	public void onPlayerRespawn(RespawnPlayerEvent e, Player p) {
-		// TODO Auto-generated method stub
-		
-		//teleportation du joueur
-		p.setLocation(gm.getMap().getRed_team_spawn());
-		// mise à jour du gamemode
-		p.offer(Keys.GAME_MODE,GameModes.ADVENTURE);
-				
-		// mise à jour de l'inventaire
-		giveWaintingStuff(p);
-		
-	}
-
-	@Override
-	@Listener
-	public void onPlayerDeath(Death e, Player p) {
-		// TODO Auto-generated method stub
-		e.setMessageCancelled(true);
-	}
-
-	@Override
-	@Listener
-	public void onPlayerDropItem(Dispense e, Player p) {
+	public void onPlayerDropItem(Dispense e,@First Player p) {
 		// TODO Auto-generated method stub
 		e.setCancelled(true);
 		//reset de l'inventaire
@@ -186,7 +169,7 @@ public class WaitingListener implements IPhaseGame{
 
 	@Override
 	@Listener
-	public void onPlayerClicInventory(ClickInventoryEvent e, Player p) {
+	public void onPlayerClicInventory(ClickInventoryEvent e,@First Player p) {
 		// TODO Auto-generated method stub
 		e.setCancelled(true);
 		//reset de l'inventaire
@@ -196,213 +179,38 @@ public class WaitingListener implements IPhaseGame{
 
 	@Override
 	@Listener
-	public void onPlayerMove(MoveEntityEvent e, Player p) {
+	public void onPlayerMove(MoveEntityEvent e,@First Player p) {
 		// TODO Auto-generated method stub
+		
 		// pas de restriction
-	}
-	
-}
-package fr.pmk_gravitywars.listener;
-
-import java.util.List;
-
-import org.spongepowered.api.Sponge;
-import org.spongepowered.api.data.key.Keys;
-import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.entity.living.player.gamemode.GameModes;
-import org.spongepowered.api.event.Listener;
-import org.spongepowered.api.event.entity.DestructEntityEvent.Death;
-import org.spongepowered.api.event.entity.MoveEntityEvent;
-import org.spongepowered.api.event.entity.living.humanoid.player.RespawnPlayerEvent;
-import org.spongepowered.api.event.item.inventory.ClickInventoryEvent;
-import org.spongepowered.api.event.item.inventory.DropItemEvent.Dispense;
-import org.spongepowered.api.event.item.inventory.InteractItemEvent;
-import org.spongepowered.api.event.network.ClientConnectionEvent;
-import org.spongepowered.api.item.inventory.ItemStackSnapshot;
-import org.spongepowered.api.text.Text;
-
-import fr.pmk_gravitywars.GravityManager;
-import fr.pmk_gravitywars.MainGravityWars;
-
-public class WaitingListener implements IPhaseGame{
-	
-	private GravityManager gm;
-	
-	public WaitingListener(GravityManager gravityManager) {
-		this.gm = gravityManager;
-	}
-
-	@Override
-	@Listener
-	public void onPlayerJoin(ClientConnectionEvent.Join e, Player p) {
-		// TODO Auto-generated method stub
-		e.setMessage(Text.of("§l§5[GravityWars]§d Le joueur §r§6" + p.getName() + "§r§l§d a rejoins la partie !"));
-		//teleportation du joueur
-		p.setLocation(gm.getMap().getRed_team_spawn());
-		// mise à jour du gamemode
-		p.offer(Keys.GAME_MODE,GameModes.ADVENTURE);
 		
-		// mise à jour de l'inventaire
-		giveWaintingStuff(p);
-		
-	}
-
-	@Override
-	@Listener
-	public void onPlayerQuit(ClientConnectionEvent.Disconnect e, Player p) {
-		// TODO Auto-generated method stub
-		
-		List<Player> r = gm.getRedTeamList();
-		List<Player> b = gm.getBlueTeamList();
-		
-		if(r.contains(p)) {
-			r.remove(p);
-		}else if(b.contains(p)) {
-			b.remove(p);
+		if(e.getToTransform().getLocation().getBlockY() < 40) {
+			
+			p.offer(Keys.GAME_MODE,GameModes.ADVENTURE);
+			p.setLocation(gm.getMap().getRed_team_spawn());
+					
+			// mise Â§ jour de l'inventaire
+			giveWaintingStuff(p);
+			
 		}
 		
-		gm.teamLeaveCommand(p);
-		
-		e.setMessage(Text.of("§l§5[GravityWars]§d Le joueur §r§6" + p.getName() + "§r§l§d a quitté la partie !"));
-		
 	}
 
 	@Override
 	@Listener
-	public void onPlayerUseItem(InteractItemEvent e, Player p) {
-		// TODO Auto-generated method stub
-		
-		List<Player> r = gm.getRedTeamList();
-		List<Player> b = gm.getBlueTeamList();
-		
-
-		ItemStackSnapshot i = e.getItemStack();
-		
-		String n = i.get(Keys.DISPLAY_NAME).get().toPlain();
-		
-		if(n.equals("§c§lRejoindre l'équipe rouge")) {
-			// utilisation team rouge
-			if(r.size() > (MainGravityWars.getMaxPlayer() / 2) | (((r.size() + 1) - b.size()) >= 2)) {
-				
-				// plus de place
-				p.sendMessage(Text.of("§c§lL'équipe rouge est complète !"));
-				
-			}else if(!r.contains(p)) {
-				// ajout dans l'équipe
-				if(b.contains(p))	// si déjà dans une équipe
-					b.remove(p);	// alors remove
-				
-				r.add(p);
-				gm.teamJoinCommand(p, "rouge");
-				p.sendMessage(Text.of("§c§lVous avez rejoins l'équipe rouge"));	// envoie du message au joueur
-				
-				for (Player player : Sponge.getServer().getOnlinePlayers()) {	// envoie du message en broadcast
-					
-					if(player != p)
-						p.sendMessage(Text.of("§c§lLe joueur §r§6" + p.getName() + "§r§c§l à rejoint l'équipe rouge"));
-					
-				}
-				
-			}else {
-				//déjà dans l'équipe
-				p.sendMessage(Text.of("§cVous faites déjà parti de l'équipe rouge !"));
-			}			
-			
-		}else if(n.equals("§9§lRejoindre l'équipe bleu")) {
-			// utilisation team bleu
-			if(b.size() > (MainGravityWars.getMaxPlayer() / 2) | (((b.size() + 1) - r.size()) >= 2)) {
-				
-				// plus de place
-				p.sendMessage(Text.of("§9§lL'équipe bleu est complète !"));
-				
-			}else if(!b.contains(p)) {
-				
-				if(r.contains(p))	// si déjà dans une équipe
-					r.remove(p);	// alors remove
-				
-				// ajout dans l'équipe
-				b.add(p);
-				gm.teamJoinCommand(p, "blue");
-				p.sendMessage(Text.of("§9§lVous avez rejoins l'équipe bleu"));	// envoie du message au joueur
-				
-				for (Player player : Sponge.getServer().getOnlinePlayers()) {	// envoie du message en broadcast
-					
-					if(player != p)
-						p.sendMessage(Text.of("§9§lLe joueur §r§6" + p.getName() + "§r§9§l à rejoint l'équipe bleu"));
-					
-				}
-
-			}else {
-				//déjà dans l'équipe
-				p.sendMessage(Text.of("§9§lVous faites déjà parti de l'équipe bleu !"));
-			}
-			
-		}else if(n.equals("§2§lRetour au lobby")) {
-			// utilisation retour lobby
-			p.sendMessage(Text.of("§2§lVous allez etre renvoyé au lobby dans quelques secondes .... Patientez"));
-			// bungeecord renvoie au lobby
-			Sponge.getChannelRegistrar().getOrCreateRaw(MainGravityWars.getInstance(), "BungeeCord").sendTo(p, buf -> buf.writeUTF("Connect").writeUTF("lobby"));
-			
-		}else {
-			
-			// item non valide
-			
-		}
-
-		e.setCancelled(true);
-		
-		p.getInventory().clear();
-		giveWaintingStuff(p);	
-		
+	public void onPlayerRespawn(RespawnPlayerEvent e,@First Player p) {
+		// TODO Auto-generated method stub		
 	}
 
 	@Override
 	@Listener
-	public void onPlayerRespawn(RespawnPlayerEvent e, Player p) {
+	public void onPlayerDeath(Death e,@First Player p) {
 		// TODO Auto-generated method stub
 		
-		//teleportation du joueur
-		p.setLocation(gm.getMap().getRed_team_spawn());
-		// mise à jour du gamemode
-		p.offer(Keys.GAME_MODE,GameModes.ADVENTURE);
-				
-		// mise à jour de l'inventaire
-		giveWaintingStuff(p);
 		
 	}
 
-	@Override
-	@Listener
-	public void onPlayerDeath(Death e, Player p) {
-		// TODO Auto-generated method stub
-		e.setMessageCancelled(true);
-	}
-
-	@Override
-	@Listener
-	public void onPlayerDropItem(Dispense e, Player p) {
-		// TODO Auto-generated method stub
-		e.setCancelled(true);
-		//reset de l'inventaire
-		p.getInventory().clear();
-		giveWaintingStuff(p);
-	}
-
-	@Override
-	@Listener
-	public void onPlayerClicInventory(ClickInventoryEvent e, Player p) {
-		// TODO Auto-generated method stub
-		e.setCancelled(true);
-		//reset de l'inventaire
-		p.getInventory().clear();
-		giveWaintingStuff(p);
-	}
-
-	@Override
-	@Listener
-	public void onPlayerMove(MoveEntityEvent e, Player p) {
-		// TODO Auto-generated method stub
-		// pas de restriction
-	}
+	
+	
 	
 }
