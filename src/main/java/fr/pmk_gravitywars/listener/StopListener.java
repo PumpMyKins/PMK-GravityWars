@@ -1,6 +1,9 @@
 package fr.pmk_gravitywars.listener;
 
+import org.spongepowered.api.data.key.Keys;
+import org.spongepowered.api.entity.Transform;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.entity.living.player.gamemode.GameModes;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.entity.DestructEntityEvent.Death;
 import org.spongepowered.api.event.entity.MoveEntityEvent;
@@ -11,6 +14,8 @@ import org.spongepowered.api.event.item.inventory.DropItemEvent.Dispense;
 import org.spongepowered.api.event.item.inventory.InteractItemEvent;
 import org.spongepowered.api.event.network.ClientConnectionEvent.Disconnect;
 import org.spongepowered.api.event.network.ClientConnectionEvent.Join;
+
+import fr.pmk_gravitywars.MainGravityWars;
 
 public class StopListener implements IPhaseGame{
 
@@ -44,9 +49,13 @@ public class StopListener implements IPhaseGame{
 		
 	}
 
-	@Override
-	public void onPlayerRespawn(RespawnPlayerEvent e, Player p) {
+	@Listener
+	public void onPlayerRespawn(RespawnPlayerEvent e,@First Player p) {
 		// TODO Auto-generated method stub
+		System.out.println("Respawn");
+		e.getTargetEntity().getInventory().clear();
+		e.getTargetEntity().offer(Keys.GAME_MODE,GameModes.SPECTATOR);
+		e.setToTransform(new Transform<>(MainGravityWars.getGravityManager().getMap().getSpec_spawn()));
 		
 	}
 
