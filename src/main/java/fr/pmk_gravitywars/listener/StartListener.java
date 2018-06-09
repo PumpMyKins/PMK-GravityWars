@@ -1,23 +1,27 @@
 package fr.pmk_gravitywars.listener;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Optional;
+import java.util.UUID;
 
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.block.BlockSnapshot;
 import org.spongepowered.api.block.BlockTypes;
 import org.spongepowered.api.data.Transaction;
 import org.spongepowered.api.data.key.Keys;
-import org.spongepowered.api.data.value.mutable.OptionalValue;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.EntityTypes;
+import org.spongepowered.api.entity.Item;
 import org.spongepowered.api.entity.Transform;
 import org.spongepowered.api.entity.explosive.PrimedTNT;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.gamemode.GameModes;
+import org.spongepowered.api.entity.projectile.Firework;
+import org.spongepowered.api.entity.vehicle.minecart.TNTMinecart;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.block.ChangeBlockEvent;
-import org.spongepowered.api.event.cause.EventContextKeys;
+import org.spongepowered.api.event.entity.CollideEntityEvent;
 import org.spongepowered.api.event.entity.DestructEntityEvent.Death;
 import org.spongepowered.api.event.entity.MoveEntityEvent;
 import org.spongepowered.api.event.entity.living.humanoid.player.RespawnPlayerEvent;
@@ -27,17 +31,27 @@ import org.spongepowered.api.event.item.inventory.DropItemEvent.Dispense;
 import org.spongepowered.api.event.item.inventory.InteractItemEvent;
 import org.spongepowered.api.event.network.ClientConnectionEvent.Disconnect;
 import org.spongepowered.api.event.network.ClientConnectionEvent.Join;
+import org.spongepowered.api.event.world.ExplosionEvent;
+import org.spongepowered.api.item.FireworkEffect;
+import org.spongepowered.api.item.FireworkShape;
+import org.spongepowered.api.item.FireworkShapes;
+import org.spongepowered.api.item.ItemTypes;
+import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.item.inventory.ItemStackSnapshot;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.util.Color;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
 import fr.pmk_gravitywars.GravityManager;
+import fr.pmk_gravitywars.utils.EffectData;
 
 public class StartListener implements IPhaseGame{
 
 	private GravityManager gm;
 	private boolean win = false;
+	
+	private HashMap<UUID, EffectData> hashBonus = new HashMap<>();
 	
 	public StartListener(GravityManager gravityManager) {
 		// TODO Auto-generated constructor stub
@@ -113,10 +127,39 @@ public class StartListener implements IPhaseGame{
 	@Listener
 	public void onPlayerUseItem(InteractItemEvent e,@First Player p) {
 		
-		/*if(!p.get(Keys.GAME_MODE).get().equals(GameModes.SURVIVAL))
+		if(!e.getInteractionPoint().isPresent())
 			return;
 		
-		BlockSnapshot b = e.getTransactions().get(0).getFinal();
+		if(e.getItemStack() == null)
+			return;
+		
+		System.out.println("use");
+		
+		if(!p.get(Keys.GAME_MODE).get().equals(GameModes.SURVIVAL))
+			return;
+		
+		ItemStackSnapshot i = e.getItemStack();
+		
+		if(i.getType().equals(ItemTypes.GUNPOWDER)) {
+			
+			World w = p.getLocation().getExtent();
+	    	
+	    	PrimedTNT tnt = (PrimedTNT) w.createEntity(EntityTypes.PRIMED_TNT, e.getInteractionPoint().get());
+	    	tnt.offer(tnt.explosionRadius().setTo(4));
+	    	
+	    	//hashBonus.put(tnt.getUniqueId(), EffectData.buildNormalTnt());	
+	    	
+			w.spawnEntity(tnt);
+	    	
+			e.setCancelled(true);
+			
+		}else {
+			
+			// bonus
+			
+		}
+		
+		/*BlockSnapshot b = e.getTransactions().get(0).getFinal();
 		
 		if(e.getTransactions().get(0).getFinal().getState().getType().equals(BlockTypes.TNT)){
 			
@@ -141,8 +184,23 @@ public class StartListener implements IPhaseGame{
 	}
 	
 	@Listener
-	public void OnPlayerPlaceBlock(ChangeBlockEvent.Place e, @First Player p) {
+	public void onItemPickup(CollideEntityEvent event, @First Player player) {
 		
+		for (Entity e : event.getEntities()) {
+			
+			if(e instanceof Item) {
+				event.setCancelled(true);
+				e.remove();
+				
+			}
+			
+		}		
+		
+	}
+	
+	@Listener
+	public void OnPlayerPlaceBlock(ChangeBlockEvent.Place e, @First Player p) {
+		/*
 		for (Transaction<BlockSnapshot> transaction : e.getTransactions()) {
 			
 		    BlockSnapshot b = transaction.getFinal(); // Block after change
@@ -154,7 +212,9 @@ public class StartListener implements IPhaseGame{
 		    	Location<World> l = b.getLocation().get();
 		    	
 		    	PrimedTNT tnt = (PrimedTNT) w.createEntity(EntityTypes.PRIMED_TNT, b.getPosition());
-		    	tnt.
+		    	tnt.offer(tnt.explosionRadius().setTo(8));
+		    	
+		    	//hashBonus.put(tnt.getUniqueId(), EffectData.buildNormalTnt());	
 		    	
 				w.spawnEntity(tnt);
 		    	
@@ -174,7 +234,7 @@ public class StartListener implements IPhaseGame{
 		    		
 		    		
 		    	}*/
-		    	
+		   /* 	
 		    	e.setCancelled(true);
 		    	gm.setStuff(p);
 		    	
@@ -182,6 +242,50 @@ public class StartListener implements IPhaseGame{
 		    }
 		    
 		    
+		}
+		*/
+	}
+	
+	@Listener
+	public void onTntDetonate(ExplosionEvent.Detonate event, @First PrimedTNT p) {
+		
+		World w = event.getTargetWorld();
+		Firework f = (Firework) w.createEntity(EntityTypes.FIREWORK, event.getExplosion().getLocation().getPosition());
+		
+		List<FireworkEffect> l = new ArrayList<>();
+		l.add(FireworkEffect.builder().color(Color.RED).fade(Color.BLACK).shape(FireworkShapes.LARGE_BALL).build());
+		
+		f.offer(Keys.FIREWORK_EFFECTS, l);
+		f.offer(Keys.FIREWORK_FLIGHT_MODIFIER,0);
+		//f.getFireworgetFireworkData().addElement(FireworkEffect.builder().color(Color.RED).build());
+		
+		w.spawnEntity(f);
+		f.detonate();
+		/*if(hashBonus.containsKey(p.getUniqueId())) {
+			
+			hashBonus.get(p.getUniqueId()).setColor(f);
+			
+		}else {
+			
+			f.getFireworkData().addElement(FireworkEffect.builder().color(Color.RED).build());
+			
+		}*/
+		
+		
+		
+		
+		
+		for (Entity e : event.getEntities()) {
+			
+			if(e instanceof Player) {
+				
+				Player player = (Player) e;
+				
+				System.out.println("player " + player.getName());
+				// ajout des effects
+				
+			}
+			
 		}
 		
 	}
