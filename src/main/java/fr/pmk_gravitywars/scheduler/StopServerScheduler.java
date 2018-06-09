@@ -1,4 +1,4 @@
-package fr.pmk_gravitywars.poubelle;
+package fr.pmk_gravitywars.scheduler;
 
 import java.util.concurrent.TimeUnit;
 
@@ -19,10 +19,10 @@ public class StopServerScheduler {
 			
 			@Override
 			public void run() {
-				/*// TODO Auto-generated method stub
+				// TODO Auto-generated method stub
 				Game game = Sponge.getGame();
 		    	game.getCommandManager().process(game.getServer().getConsole(), "stop");
-				*/
+				
 			}
 		}).delay(15, TimeUnit.SECONDS).submit(MainGravityWars.getInstance());
 		

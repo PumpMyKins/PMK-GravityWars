@@ -1,4 +1,4 @@
-package fr.pmk_gravitywars.poubelle;
+package fr.pmk_gravitywars.scheduler;
 
 import java.util.concurrent.TimeUnit;
 
@@ -21,17 +21,17 @@ public class StopGameScheduler {
 			
 			@Override
 			public void run() {
-				/*// TODO Auto-generated method stub
+				// TODO Auto-generated method stub
 				
-				Sponge.getServer().getBroadcastChannel().send(Text.of("ง2Retour au lobby dans quelques secondes !"));
+				Sponge.getServer().getBroadcastChannel().send(Text.of("ยง2Retour au lobby dans quelques secondes !"));
 				
 				for (Player p : Sponge.getServer().getOnlinePlayers()) {
 					
-					Sponge.getChannelRegistrar().getOrCreateRaw(MainGravityWars.getInstace(), "BungeeCord").sendTo(p, buf -> buf.writeUTF("Connect").writeUTF("lobby"));
+					Sponge.getChannelRegistrar().getOrCreateRaw(MainGravityWars.getInstance(), "BungeeCord").sendTo(p, buf -> buf.writeUTF("Connect").writeUTF("lobby"));
 					
 				}
 				
-				new StopServerScheduler().start();*/
+				new StopServerScheduler().start();
 			}
 		}).delay(15, TimeUnit.SECONDS).submit(MainGravityWars.getInstance());
 	}

@@ -11,13 +11,11 @@ import org.spongepowered.api.text.Text;
 import fr.pmk_gravitywars.GravityManager;
 import fr.pmk_gravitywars.MainGravityWars;
 
-public class StartingScheduler {
+public class WaitingScheduler {
 
-	private boolean state = true;
-	private int count = 60;
+	public static boolean state = true;
 	
-	public void start(GravityManager gm) {
-		// TODO Auto-generated method stub
+	public static void start(GravityManager gm) {
 		
 		Task.Builder t = Task.builder();
 		
@@ -26,51 +24,48 @@ public class StartingScheduler {
 			@Override
 			public void run() {
 				// TODO Auto-generated method stub
-				// v�rification si ok pour start ou non
-				
-				List<Player> r = gm.getRedTeamList();
-				List<Player> b = gm.getBlueTeamList();
+				// vérification si ok pour start ou non
 				
 				if(state) {
 					
-					if(r.size() + b.size() < 2) {
-						// pas ok pour start
+					List<Player> r = gm.getRedTeamList();
+					List<Player> b = gm.getBlueTeamList();
+					
+					if(r.size() + b.size() >= MainGravityWars.getMinPlayer()) {
+						// ok pour start
 						
-						Sponge.getServer().getBroadcastChannel().send(Text.of("§l§5[GravityWars]§d Lancement de la partie impossible car une des �quipes n'a pas le nombre de participant suffisant"));
-						
-						// stop du Starting compteur
-						state = false;
-						// nouveau lancement du check Waiting
-						WaitingScheduler.state = true;
+						// vérification si 2 personne alors 1 dans chaque équipe
+						if((r.size() + b.size() == MainGravityWars.getMinPlayer()) & !(r.size() == b.size())) {
+							// pas ok car équipe vide
+							
+							Sponge.getServer().getBroadcastChannel().send(Text.of("§l§5[GravityWars]§c Une des équipes est vide ... Impossible de lancer !"));
+							
+							
+						}else {
+							
+							// lancement de la partie
+							Sponge.getServer().getBroadcastChannel().send(Text.of("§l§5[GravityWars]§d Partie en cours de lancement !"));
+							new StartingScheduler().start(gm);
+							
+							state = false;
+							
+						}
 						
 					}else {
 						
-						// soustract count timer
-						count -= 5;
-						
+						Sponge.getServer().getBroadcastChannel().send(Text.of("§l§5[GravityWars]§c Il manque des joueurs pour que la partie démarre !"));
 						
 					}
 					
-					if(count <= 0) {
-						
-						// start de la partie
-						Sponge.getServer().getBroadcastChannel().send(Text.of("§l§5[GravityWars]§c Attention lancement de la partie maintenant !"));
-						state = false;
-						gm.startGame();
-						
-					}else {
-						
-						Sponge.getServer().getBroadcastChannel().send(Text.of("§l§5[GravityWars]§d Lancement de la partie dans §e" + count + " secondes"));
-						
-					}
-					
-					
-					
-				}
+				}	
+				
+				//
+				
+				
 				
 			}
-		}).interval(5, TimeUnit.SECONDS).submit(MainGravityWars.getInstance());
+		}).delay(5, TimeUnit.SECONDS).interval(25, TimeUnit.SECONDS).submit(MainGravityWars.getInstance());
 		
 	}
-
+	
 }

@@ -42,17 +42,17 @@ public interface IPhaseGame {
 		Hotbar hotbar = i.query(Hotbar.class);
 		
 		ItemStack redItem = ItemStack.builder().itemType(ItemTypes.REDSTONE).quantity(1).build();
-		redItem.offer(Keys.DISPLAY_NAME, Text.of("§c§lRejoindre l'équipe rouge"));
+		redItem.offer(Keys.DISPLAY_NAME, Text.of("Â§cÂ§lRejoindre l'Ã©quipe rouge"));
 		
 		hotbar.set(new SlotIndex(2), redItem);
 		
 		ItemStack leaveItem = ItemStack.builder().itemType(ItemTypes.BED).quantity(1).build();
-		leaveItem.offer(Keys.DISPLAY_NAME, Text.of("§2§lRetour au lobby"));
+		leaveItem.offer(Keys.DISPLAY_NAME, Text.of("Â§2Â§lRetour au lobby"));
 		
 		hotbar.set(new SlotIndex(4), leaveItem);
 		
 		ItemStack blueItem = ItemStack.builder().itemType(ItemTypes.LAPIS_ORE).quantity(1).build();
-		blueItem.offer(Keys.DISPLAY_NAME, Text.of("§9§lRejoindre l'équipe bleu"));
+		blueItem.offer(Keys.DISPLAY_NAME, Text.of("Â§9Â§lRejoindre l'Ã©quipe bleu"));
 		
 		hotbar.set(new SlotIndex(6), blueItem);
 		

@@ -33,7 +33,7 @@ public class WaitingListener implements IPhaseGame{
 	@Listener
 	public void onPlayerJoin(ClientConnectionEvent.Join e,@First Player p) {
 		// TODO Auto-generated method stub
-		e.setMessage(Text.of("§l§5[GravityWars]§d Le joueur §r§6" + p.getName() + "§r§l§d a rejoins la partie !"));
+		e.setMessage(Text.of("§l§5[GravityWars]§d Le joueur §r§6" + p.getName() + "§r§d a rejoint la partie !"));
 		//teleportation du joueur
 		p.setLocation(gm.getMap().getRed_team_spawn());
 		// mise § jour du gamemode
@@ -60,7 +60,7 @@ public class WaitingListener implements IPhaseGame{
 		
 		gm.teamLeaveCommand(p);
 		
-		e.setMessage(Text.of("§l§5[GravityWars]§d Le joueur §r§6" + p.getName() + "§r§l§d a quitté la partie !"));
+		e.setMessage(Text.of("§l§5[GravityWars]§d Le joueur §r§6" + p.getName() + "§r§d a quitté la partie !"));
 		
 	}
 
@@ -97,12 +97,7 @@ public class WaitingListener implements IPhaseGame{
 				gm.teamJoinCommand(p, "rouge");
 				p.sendMessage(Text.of("§c§lVous avez rejoins l'équipe rouge"));	// envoie du message au joueur
 				
-				for (Player player : Sponge.getServer().getOnlinePlayers()) {	// envoie du message en broadcast
-					
-					if(player != p)
-						p.sendMessage(Text.of("§c§lLe joueur §r§6" + p.getName() + "§r§c§l § rejoint l'équipe rouge"));
-					
-				}
+				Sponge.getServer().getBroadcastChannel().send(Text.of("§c§lLe joueur §r§6" + p.getName() + "§r§c a rejoint l'équipe rouge"));
 				
 			}else {
 				//d§j§ dans l'§quipe
@@ -124,14 +119,9 @@ public class WaitingListener implements IPhaseGame{
 				// ajout dans l'§quipe
 				b.add(p);
 				gm.teamJoinCommand(p, "blue");
-				p.sendMessage(Text.of("§9§lVous avez rejoins l'équipe bleu"));	// envoie du message au joueur
+				p.sendMessage(Text.of("§9§lVous avez rejoint l'équipe bleu"));	// envoie du message au joueur
 				
-				for (Player player : Sponge.getServer().getOnlinePlayers()) {	// envoie du message en broadcast
-					
-					if(player != p)
-						p.sendMessage(Text.of("§9§lLe joueur §r§6" + p.getName() + "§r§9§l § rejoint l'équipe bleu"));
-					
-				}
+				Sponge.getServer().getBroadcastChannel().send(Text.of("§9§lLe joueur §r§6" + p.getName() + "§r§9 rejoint l'équipe bleu"));
 
 			}else {
 				//d§j§ dans l'§quipe
@@ -184,7 +174,7 @@ public class WaitingListener implements IPhaseGame{
 		
 		// pas de restriction
 		
-		if(e.getToTransform().getLocation().getBlockY() < 40) {
+		if(e.getToTransform().getLocation().getBlockY() < 55) {
 			
 			p.offer(Keys.GAME_MODE,GameModes.ADVENTURE);
 			p.setLocation(gm.getMap().getRed_team_spawn());

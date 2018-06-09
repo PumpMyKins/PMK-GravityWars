@@ -15,8 +15,11 @@ import org.spongepowered.api.item.inventory.entity.Hotbar;
 import org.spongepowered.api.item.inventory.property.SlotIndex;
 
 import fr.pmk_gravitywars.listener.StartListener;
+import fr.pmk_gravitywars.listener.StopListener;
 import fr.pmk_gravitywars.listener.WaitingListener;
 import fr.pmk_gravitywars.map.GravityMap;
+import fr.pmk_gravitywars.scheduler.BonusScheduler;
+import fr.pmk_gravitywars.scheduler.StopGameScheduler;
 import fr.pmk_gravitywars.scheduler.WaitingScheduler;
 
 public class GravityManager {
@@ -27,6 +30,9 @@ public class GravityManager {
 	
 	private List<Player> redTeamList = new ArrayList<>();
 	private List<Player> blueTeamList = new ArrayList<>();
+	
+	private WaitingListener waitingListener;
+	private StartListener startListener;
 	
 	private String state = "stop";
 	
@@ -50,7 +56,9 @@ public class GravityManager {
 		// register la classe d'event pour la fase waiting
 		teamInitCommand();
 		
-		Sponge.getGame().getEventManager().registerListeners(MainGravityWars.getInstance(), new WaitingListener(this));
+		waitingListener = new WaitingListener(this);
+		
+		Sponge.getGame().getEventManager().registerListeners(MainGravityWars.getInstance(), waitingListener);
 		
 		WaitingScheduler.start(this);
 		
@@ -58,8 +66,12 @@ public class GravityManager {
 	
 	public void startGame() {
 		
-		Sponge.getGame().getEventManager().unregisterListeners(new WaitingListener(this));
-		Sponge.getGame().getEventManager().registerListeners(MainGravityWars.getInstance(), new StartListener(this));
+		Sponge.getGame().getEventManager().unregisterListeners(waitingListener);
+		
+		startListener = new StartListener(this);
+		Sponge.getGame().getEventManager().registerListeners(MainGravityWars.getInstance(), startListener);
+		
+		new BonusScheduler().start();
 		
 		// téléportation de l'équipe rouge
 		
@@ -70,6 +82,7 @@ public class GravityManager {
 			
 			// set du stuff
 			setStuff(player);
+			player.offer(Keys.GAME_MODE,GameModes.SURVIVAL);
 			
 		}
 		
@@ -78,27 +91,48 @@ public class GravityManager {
 		for (Player player : redTeamList) {
 			
 			// téléportation
-			player.setLocation(getMap().getBlue_team_spawn());
+			player.setLocation(getMap().getRed_team_spawn());
 			
 			// set du stuff
 			setStuff(player);
+			player.offer(Keys.GAME_MODE,GameModes.SURVIVAL);
 			
 		}
 		
 		// téléportation des spectateurs;
 		for (Player player : Sponge.getServer().getOnlinePlayers()) {
 			
-			if(!redTeamList.contains(player) & !redTeamList.contains(player)) {
+			if(!redTeamList.contains(player) & !blueTeamList.contains(player)) {
 				
 				//spec
 				
 				player.setLocation(getMap().getSpec_spawn());
 				// mise à jour du gamemode
-				player.offer(Keys.GAME_MODE,GameModes.ADVENTURE);
+				player.offer(Keys.GAME_MODE,GameModes.SPECTATOR);
 				
 			}
 			
 		}
+		
+	}
+	
+	public void finishGame() {
+		// TODO Auto-generated method stub
+		Sponge.getGame().getEventManager().unregisterListeners(startListener);
+		Sponge.getGame().getEventManager().registerListeners(MainGravityWars.getInstance(), new StopListener());
+		
+		
+		
+		for (Player player : Sponge.getServer().getOnlinePlayers()) {
+			
+			player.setLocation(getMap().getSpec_spawn());
+			// mise à jour du gamemode
+			player.offer(Keys.GAME_MODE,GameModes.SPECTATOR);
+			
+			
+		}
+		
+		new StopGameScheduler().start();
 		
 	}
 	
@@ -109,24 +143,24 @@ public class GravityManager {
 	public void teamInitCommand() {
 		// TODO Auto-generated method stub
 		// création de la team rouge
-		Sponge.getGame().getCommandManager().process(Sponge.getServer().getConsole(), "/scoreboard teams add rouge Equipe rouge");
-		Sponge.getGame().getCommandManager().process(Sponge.getServer().getConsole(), "/scoreboard teams option rouge color red");
+		Sponge.getGame().getCommandManager().process(Sponge.getServer().getConsole(), "scoreboard teams add rouge Equipe rouge");
+		Sponge.getGame().getCommandManager().process(Sponge.getServer().getConsole(), "scoreboard teams option rouge color red");
 		
 		// creation de la team bleu
-		Sponge.getGame().getCommandManager().process(Sponge.getServer().getConsole(), "/scoreboard teams add blue Equipe bleu");
-		Sponge.getGame().getCommandManager().process(Sponge.getServer().getConsole(), "/scoreboard teams option blue color blue");
+		Sponge.getGame().getCommandManager().process(Sponge.getServer().getConsole(), "scoreboard teams add blue Equipe bleu");
+		Sponge.getGame().getCommandManager().process(Sponge.getServer().getConsole(), "scoreboard teams option blue color blue");
 	}
 	
 	
 	public void teamJoinCommand(Player p, String name) {
 		// join équipe
-		Sponge.getGame().getCommandManager().process(Sponge.getServer().getConsole(), "/scoreboard teams join " + name + " " + p.getName());
+		Sponge.getGame().getCommandManager().process(Sponge.getServer().getConsole(), "scoreboard teams join " + name + " " + p.getName());
 		
 	}
 	
 	public void teamLeaveCommand(Player p) {
 		// leave équipe
-		Sponge.getGame().getCommandManager().process(Sponge.getServer().getConsole(), "/scoreboard teams leave " + p.getName());
+		Sponge.getGame().getCommandManager().process(Sponge.getServer().getConsole(), "scoreboard teams leave " + p.getName());
 		
 	}
 

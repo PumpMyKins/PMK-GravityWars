@@ -26,17 +26,17 @@ public class StartingScheduler {
 			@Override
 			public void run() {
 				// TODO Auto-generated method stub
-				// v�rification si ok pour start ou non
+				// v�rification si ok pour start ou non
 				
 				List<Player> r = gm.getRedTeamList();
 				List<Player> b = gm.getBlueTeamList();
 				
 				if(state) {
 					
-					if(r.size() + b.size() <= 2) {
+					if((r.size() + b.size() < MainGravityWars.getMinPlayer()) | ((r.size() + b.size() == MainGravityWars.getMinPlayer()) & !(r.size() == b.size()))) {
 						// pas ok pour start
 						
-						Sponge.getServer().getBroadcastChannel().send(Text.of("Lancement de la partie impossible car une des �quipes n'a pas le nombre de participant suffisant"));
+						Sponge.getServer().getBroadcastChannel().send(Text.of("§l§5[GravityWars]§d Lancement de la partie impossible car une des équipes n'a pas le nombre de participant suffisant"));
 						
 						// stop du Starting compteur
 						state = false;
@@ -54,12 +54,13 @@ public class StartingScheduler {
 					if(count <= 0) {
 						
 						// start de la partie
-						Sponge.getServer().getBroadcastChannel().send(Text.of("Attention lancement de la partie maintenant !"));
+						Sponge.getServer().getBroadcastChannel().send(Text.of("§l§5[GravityWars]§c Attention lancement de la partie maintenant !"));
 						state = false;
+						gm.startGame();
 						
 					}else {
 						
-						Sponge.getServer().getBroadcastChannel().send(Text.of("Lancement de la partie dans " + count + " secondes"));
+						Sponge.getServer().getBroadcastChannel().send(Text.of("§l§5[GravityWars]§d Lancement de la partie dans §e" + count + " secondes"));
 						
 					}
 					

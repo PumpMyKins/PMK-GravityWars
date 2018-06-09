@@ -39,7 +39,7 @@ public class MainGravityWars {
 	private static Location<World> spawn2; 
 	private static Location<World> spawnSpec; 
 	
-	private static int maxPlayer = 6;
+	private static int maxPlayer = 8;
 	private static int minPlayer = 2;
 	
 	@Listener
