@@ -210,7 +210,7 @@ public class GravityManager {
 		Hotbar hotbar = i.query(Hotbar.class);
 		hotbar.set(new SlotIndex(0), ItemStack.of(Sponge.getGame().getRegistry().getType(ItemType.class, "gravitygun:gravitygun").get(), 1));
 		
-		ItemStack item = ItemStack.builder().itemType(ItemTypes.TNT).quantity(64).build();
+		ItemStack item = ItemStack.builder().itemType(ItemTypes.GUNPOWDER).quantity(1).build();
 		
 		hotbar.set(new SlotIndex(1), item);
 		
