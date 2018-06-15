@@ -3,13 +3,15 @@ package fr.pmk_gravitywars.listener;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.spongepowered.api.Sponge;
-import org.spongepowered.api.block.BlockSnapshot;
-import org.spongepowered.api.block.BlockTypes;
-import org.spongepowered.api.data.Transaction;
 import org.spongepowered.api.data.key.Keys;
+import org.spongepowered.api.data.manipulator.mutable.PotionEffectData;
+import org.spongepowered.api.effect.potion.PotionEffect;
+import org.spongepowered.api.effect.potion.PotionEffectType;
+import org.spongepowered.api.effect.potion.PotionEffectTypes;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.EntityTypes;
 import org.spongepowered.api.entity.Item;
@@ -18,7 +20,6 @@ import org.spongepowered.api.entity.explosive.PrimedTNT;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.gamemode.GameModes;
 import org.spongepowered.api.entity.projectile.Firework;
-import org.spongepowered.api.entity.vehicle.minecart.TNTMinecart;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.block.ChangeBlockEvent;
 import org.spongepowered.api.event.entity.CollideEntityEvent;
@@ -33,17 +34,18 @@ import org.spongepowered.api.event.network.ClientConnectionEvent.Disconnect;
 import org.spongepowered.api.event.network.ClientConnectionEvent.Join;
 import org.spongepowered.api.event.world.ExplosionEvent;
 import org.spongepowered.api.item.FireworkEffect;
-import org.spongepowered.api.item.FireworkShape;
 import org.spongepowered.api.item.FireworkShapes;
 import org.spongepowered.api.item.ItemTypes;
-import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.item.inventory.ItemStackSnapshot;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.util.Color;
-import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
+import com.flowpowered.math.vector.Vector3d;
+
 import fr.pmk_gravitywars.GravityManager;
+import fr.pmk_gravitywars.utils.CoolDownData;
+import fr.pmk_gravitywars.utils.CooldownUUIDData;
 import fr.pmk_gravitywars.utils.EffectData;
 
 public class StartListener implements IPhaseGame{
@@ -52,6 +54,7 @@ public class StartListener implements IPhaseGame{
 	private boolean win = false;
 	
 	private HashMap<UUID, EffectData> hashBonus = new HashMap<>();
+	private HashMap<String, CoolDownData> cooldown = new HashMap<>(); 
 	
 	public StartListener(GravityManager gravityManager) {
 		// TODO Auto-generated constructor stub
@@ -133,54 +136,131 @@ public class StartListener implements IPhaseGame{
 		if(e.getItemStack() == null)
 			return;
 		
-		System.out.println("use");
+		
 		
 		if(!p.get(Keys.GAME_MODE).get().equals(GameModes.SURVIVAL))
 			return;
 		
 		ItemStackSnapshot i = e.getItemStack();
 		
+		CooldownUUIDData c = gm.getHashPlayerData().get(p.getUniqueId().toString());
+		
 		if(i.getType().equals(ItemTypes.GUNPOWDER)) {
 			
-			World w = p.getLocation().getExtent();
-	    	
-	    	PrimedTNT tnt = (PrimedTNT) w.createEntity(EntityTypes.PRIMED_TNT, e.getInteractionPoint().get());
-	    	tnt.offer(tnt.explosionRadius().setTo(4));
-	    	
-	    	//hashBonus.put(tnt.getUniqueId(), EffectData.buildNormalTnt());	
-	    	
-			w.spawnEntity(tnt);
-	    	
-			e.setCancelled(true);
+			UUID uuid = c.getNormalTNT();
 			
-		}else {
-			
-			// bonus
-			
-		}
-		
-		/*BlockSnapshot b = e.getTransactions().get(0).getFinal();
-		
-		if(e.getTransactions().get(0).getFinal().getState().getType().equals(BlockTypes.TNT)){
-			
-			World w = b.getLocation().get().getExtent();
-			
-			Entity tnt = w.createEntity(EntityTypes.PRIMED_TNT, b.getLocation().get().getTileEntity().get().getLocation().getBlockPosition());
-			
-			w.spawnEntity(tnt);
-			
-		}else {
-			
-			ItemStackSnapshot i = e.getCause().getContext().get(EventContextKeys.USED_ITEM).get();
-			String n = i.get(Keys.DISPLAY_NAME).get().toPlain();
-			
-			/*for (Bon iterable_element : gm.getBonusList()) {
+			if(!cooldown.containsKey(uuid.toString())) {
 				
-			}*/
-		/*	
+				cooldown.put(uuid.toString(), new CoolDownData(0));
+				
+			}
+			
+			if(!((System.currentTimeMillis() - cooldown.get(uuid.toString()).getCooldown()) <= 750)) {
+				
+				cooldown.get(uuid.toString()).setCooldown(System.currentTimeMillis());
+				
+				spawnTNT(p, e.getInteractionPoint().get());
+				
+			}
+			
+		}else {
+			
+			// bonus blindness
+			if(i.getType().equals(ItemTypes.BEEF)) {
+				
+				UUID uuid = c.getBlindTNT();
+				
+				if(!cooldown.containsKey(uuid.toString())) {
+					
+					cooldown.put(uuid.toString(), new CoolDownData(0));
+					
+				}
+				
+				if(!((System.currentTimeMillis() - cooldown.get(uuid.toString()).getCooldown()) <= 10000)) {
+					
+					cooldown.get(uuid.toString()).setCooldown(System.currentTimeMillis());
+					
+					hashBonus.put(spawnTNT(p, e.getInteractionPoint().get()),new EffectData(Color.BLACK, PotionEffect.builder().potionType(PotionEffectTypes.BLINDNESS).amplifier(4).duration(80).build()));
+					
+				}
+				
+			}else if(i.getType().equals(ItemTypes.POISONOUS_POTATO)) { 		// bonus poisson
+				
+				UUID uuid = c.getPoissonTNT();
+				
+				if(!cooldown.containsKey(uuid.toString())) {
+					
+					cooldown.put(uuid.toString(), new CoolDownData(0));
+					
+				}
+				
+				if(!((System.currentTimeMillis() - cooldown.get(uuid.toString()).getCooldown()) <= 10000)) {
+					
+					cooldown.get(uuid.toString()).setCooldown(System.currentTimeMillis());
+					
+					hashBonus.put(spawnTNT(p, e.getInteractionPoint().get()),new EffectData(Color.GREEN, PotionEffect.builder().potionType(PotionEffectTypes.NAUSEA).duration(180).build()));
+					
+				}				
+				
+			}else if(i.getType().equals(ItemTypes.SHULKER_SHELL)) { 			// bonus levitation
+				
+				UUID uuid = c.getLevitateTNT();
+				
+				if(!cooldown.containsKey(uuid.toString())) {
+					
+					cooldown.put(uuid.toString(), new CoolDownData(0));
+					
+				}
+				
+				if(!((System.currentTimeMillis() - cooldown.get(uuid.toString()).getCooldown()) <= 20000)) {
+					
+					cooldown.get(uuid.toString()).setCooldown(System.currentTimeMillis());
+					
+					hashBonus.put(spawnTNT(p, e.getInteractionPoint().get()),new EffectData(Color.GRAY, PotionEffect.builder().potionType(PotionEffectTypes.LEVITATION).amplifier(10).duration(25).build()));
+					
+				}
+				
+			}/*else if(i.getType().equals(ItemTypes.TNT)){
+				
+				UUID uuid = UUID.randomUUID();
+				
+				if(!cooldown.containsKey(uuid.toString())) {
+					
+					cooldown.put(uuid.toString(), new CoolDownData(0));
+					
+				}
+				
+				if(!((System.currentTimeMillis() - cooldown.get(uuid.toString()).getCooldown()) <= 5)) {
+					
+					cooldown.get(uuid.toString()).setCooldown(System.currentTimeMillis());
+					
+					spawnTNT(p, e.getInteractionPoint().get());
+					
+				}
+				
+			}*/else {
+				
+				
+				
+			}
+			
 		}
-		e.setCancelled(true);
-		*/
+		
+	}
+	
+	private UUID spawnTNT(Player p, Vector3d v) {
+		
+		World w = p.getLocation().getExtent();
+    	
+    	PrimedTNT tnt = (PrimedTNT) w.createEntity(EntityTypes.PRIMED_TNT, v);
+    	tnt.offer(tnt.explosionRadius().setTo(4));
+    	
+    	//hashBonus.put(tnt.getUniqueId(), EffectData.buildNormalTnt());	
+    	
+		w.spawnEntity(tnt);
+		
+		return tnt.getUniqueId();
+		
 	}
 	
 	@Listener
@@ -247,10 +327,11 @@ public class StartListener implements IPhaseGame{
 	}
 	
 	@Listener
-	public void onTntDetonate(ExplosionEvent.Detonate event, @First PrimedTNT p) {
+	public void onTntDetonate(ExplosionEvent.Detonate event) {
 		
 		World w = event.getTargetWorld();
-		Firework f = (Firework) w.createEntity(EntityTypes.FIREWORK, event.getExplosion().getLocation().getPosition());
+		
+		/*Firework f = (Firework) w.createEntity(EntityTypes.FIREWORK, event.getExplosion().getLocation().getPosition());
 		
 		List<FireworkEffect> l = new ArrayList<>();
 		l.add(FireworkEffect.builder().color(Color.RED).fade(Color.BLACK).shape(FireworkShapes.LARGE_BALL).build());
@@ -260,7 +341,56 @@ public class StartListener implements IPhaseGame{
 		//f.getFireworgetFireworkData().addElement(FireworkEffect.builder().color(Color.RED).build());
 		
 		w.spawnEntity(f);
-		f.detonate();
+		
+		f.detonate();*/
+		
+		Optional<PrimedTNT> o = event.getCause().first(PrimedTNT.class);
+		
+		if(o.isPresent()) {
+			
+			PrimedTNT p = o.get();
+			
+			if(!hashBonus.containsKey(p.getUniqueId())) {
+				return;
+			}
+			
+			EffectData data = hashBonus.get(p.getUniqueId());
+			
+			Firework f = (Firework) w.createEntity(EntityTypes.FIREWORK, event.getExplosion().getLocation().getPosition());
+			
+			List<FireworkEffect> l = new ArrayList<>();
+			l.add(FireworkEffect.builder().color(data.getColor()).fade(data.getColor()).shape(FireworkShapes.LARGE_BALL).build());
+			
+			f.offer(Keys.FIREWORK_EFFECTS, l);
+			f.offer(Keys.FIREWORK_FLIGHT_MODIFIER,0);
+			//f.getFireworgetFireworkData().addElement(FireworkEffect.builder().color(Color.RED).build());
+			
+			w.spawnEntity(f);
+			
+			f.detonate();
+			
+			for (Entity e : event.getEntities()) {
+				
+				if(e instanceof Player) {
+					
+					System.out.println("player touché");
+					
+					Player player = (Player) e;
+					
+					PotionEffectData effects = player.getOrCreate(PotionEffectData.class).get();
+					
+					effects.addElement(data.getPotionEffect());
+					
+					System.out.println("player touché");
+					
+					player.offer(effects);
+					
+				}
+				
+			}
+			
+		}
+		
 		/*if(hashBonus.containsKey(p.getUniqueId())) {
 			
 			hashBonus.get(p.getUniqueId()).setColor(f);
@@ -270,23 +400,6 @@ public class StartListener implements IPhaseGame{
 			f.getFireworkData().addElement(FireworkEffect.builder().color(Color.RED).build());
 			
 		}*/
-		
-		
-		
-		
-		
-		for (Entity e : event.getEntities()) {
-			
-			if(e instanceof Player) {
-				
-				Player player = (Player) e;
-				
-				System.out.println("player " + player.getName());
-				// ajout des effects
-				
-			}
-			
-		}
 		
 	}
 
